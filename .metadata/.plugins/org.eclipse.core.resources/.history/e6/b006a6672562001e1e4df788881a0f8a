@@ -1,0 +1,49 @@
+package proyectoSellers;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.swing.JOptionPane;
+
+public class DataSeller {
+
+	private Connection con;
+	private PreparedStatement ps;
+	private ResultSet rs;
+	
+	private Connection conectar() {
+		try {
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/proyectoseller","root","");
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null,"Error al conectar: " +e);
+		}
+		return con;
+	}
+	
+	public boolean saveSeller(NegocioSeller ns) {
+		boolean save = false;
+		String query ="insert into sellers values(?,?,?)";
+		conectar();
+		try {
+			ps = con.prepareStatement(query);
+			ps.setString(1, ns.getSellerCode());
+			ps.setString(2, ns.getFirstName());
+			ps.setString(3, ns.getEmailAddres());
+			int guarda = ps.executeUpdate();
+			if(guarda>0) {
+				JOptionPane.showMessageDialog(null, "Seller saved");
+				save = true;
+			}else {
+				JOptionPane.showMessageDialog(null, "Error on save");				
+			}
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null,"Error al guardar: " +e);
+		}
+		return save;
+	}
+}
